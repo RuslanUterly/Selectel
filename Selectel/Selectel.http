@@ -1,0 +1,6 @@
+@Selectel_HostAddress = http://localhost:5282
+
+GET {{Selectel_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
