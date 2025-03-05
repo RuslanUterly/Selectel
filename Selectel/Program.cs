@@ -1,4 +1,3 @@
-
 using Amazon.S3;
 using Selectel.Services;
 
@@ -21,23 +20,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-
-        builder.Services.AddSingleton<IAmazonS3>(provider =>
-        {
-            var configuration = provider.GetRequiredService<IConfiguration>();
-            var config = new AmazonS3Config
-            {
-                ServiceURL = configuration["S3Storage:ServiceURL"],
-                ForcePathStyle = true,
-                AuthenticationRegion = configuration["S3Storage:Region"]
-            };
-
-            return new AmazonS3Client(
-                configuration["S3Storage:AccessKey"],
-                configuration["S3Storage:SecretKey"],
-                config
-            );
-        });
+        builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+        builder.Services.AddAWSService<IAmazonS3>();
 
         builder.Services.AddScoped<SelectelStorageService>();
 
