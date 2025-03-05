@@ -19,7 +19,7 @@ public class StorageController : ControllerBase
     public async Task<IActionResult> UploadFile(IFormFile file, string path = "")
     {
         var keyName = $"{path.TrimEnd('/')}{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
-        var result = await _storageService.UploadFile(file, keyName, path);
+        var result = await _storageService.UploadFile(file, keyName);
         return Ok(new { KeyName = result });
     }
 
@@ -30,7 +30,6 @@ public class StorageController : ControllerBase
         var result = await _storageService.UploadBigFile(
             file,
             keyName,
-            path,
             progress =>
             {
                 Console.WriteLine($"Current progress: {progress}%");
