@@ -27,7 +27,7 @@ public class SelectelStorageService
         _bucketName = configuration["S3Storage:BucketName"];
     }
 
-    public async Task<string> UploadFile(IFormFile file, string keyName, string path)
+    public async Task<string> UploadFile(IFormFile file, string keyName)
     {
         using MemoryStream memoryStream = new MemoryStream();
         file.CopyTo(memoryStream);
@@ -44,7 +44,7 @@ public class SelectelStorageService
         return keyName;
     }
 
-    public async Task<string> UploadBigFile(IFormFile file, string keyName, string path, Action<int> progressCallback = null)
+    public async Task<string> UploadBigFile(IFormFile file, string keyName, Action<int> progressCallback = null)
     {
         var fileTransferUtility = new TransferUtility(_s3Client);
 
