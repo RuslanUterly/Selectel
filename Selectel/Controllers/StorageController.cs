@@ -18,7 +18,10 @@ public class StorageController : ControllerBase
     [HttpPost("upload")]
     public async Task<IActionResult> UploadFile(IFormFile file, string path = "")
     {
-        var keyName = $"{path.TrimEnd('/')}{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
+        var keyName = string.IsNullOrEmpty(path)
+            ? $"{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}"
+            : $"{path.TrimEnd('/')}/{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
+
         var result = await _storageService.UploadFile(file, keyName);
         return Ok(new { KeyName = result });
     }
@@ -26,7 +29,10 @@ public class StorageController : ControllerBase
     [HttpPost("upload-big")]
     public async Task<IActionResult> UploadBigFile(IFormFile file, string path = "")
     {
-        var keyName = $"{path.TrimEnd('/')}{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
+        var keyName = string.IsNullOrEmpty(path)
+            ? $"{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}"
+            : $"{path.TrimEnd('/')}/{Ulid.NewUlid()}{Path.GetExtension(file.FileName)}";
+
         var result = await _storageService.UploadBigFile(
             file,
             keyName,
@@ -41,14 +47,22 @@ public class StorageController : ControllerBase
     [HttpGet("download/{keyName}")]
     public async Task<IActionResult> DownloadFile(string keyName, string path = "")
     {
-        var stream = await _storageService.DownloadFileAsync($"{path.TrimEnd('/')}{keyName}");
+        var fullPath = string.IsNullOrEmpty(path)
+            ? $"{keyName}"
+            : $"{path.TrimEnd('/')}/{keyName}";
+
+        var stream = await _storageService.DownloadFileAsync($"{fullPath}");
         return File(stream, "application/octet-stream", keyName);
     }
 
     [HttpDelete("{keyName}")]
     public async Task<IActionResult> DeleteFile(string keyName, string path= "")
     {
-        await _storageService.DeleteFileAsync($"{path.TrimEnd('/')}{keyName}");
+        var fullPath = string.IsNullOrEmpty(path)
+            ? $"{keyName}"
+            : $"{path.TrimEnd('/')}/{keyName}";
+
+        await _storageService.DeleteFileAsync($"{fullPath}");
         return NoContent();
     }
 }
